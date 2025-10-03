@@ -1,0 +1,9 @@
+Host edcastdev.com
+  HostName edcastdev.com
+  User edhunter
+  IdentityFile "C:/Users/Envy PC/.ssh/ed_go_key"
+
+Host poemm.fr
+    HostName 0zo.f49.myftpupload.com
+    User af7CUD2xPN3lS=
+    IdentityFile "C:/Users/Envy PC/.ssh/poemm_go_key"
