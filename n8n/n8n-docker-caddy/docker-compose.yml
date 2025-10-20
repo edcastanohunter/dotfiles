@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  # caddy:
+  #   image: caddy:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - caddy_data:/data
+  #     - ${DATA_FOLDER}/caddy_config:/config
+  #     - ${DATA_FOLDER}/caddy_config/Caddyfile:/etc/caddy/Caddyfile
+  #   environment:
+  #     # Cloudflare API token used by the dns cloudflare challenge in Caddyfile.
+  #     # Store this token securely (do not commit to git). You can set it in
+  #     # your environment or a docker secret and inject it here.
+  #     - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      # Do not publish n8n's port to the host. Caddy (in the same Docker
+      # network) will reverse-proxy to the 'n8n' service internally.
+      # Removing the host mapping prevents access via host_ip:5678.
+      # If you want to expose for debugging only on localhost, you can use
+      # the bind-to-localhost syntax (Docker Engine v20.10+):
+      - "127.0.0.1:5678:5678"
+    environment:
+      - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ${DATA_FOLDER}/local_files:/files
+      
+volumes:
+  # caddy_data:
+  #   external: true
+  n8n_data:
+    external: true

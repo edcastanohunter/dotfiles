@@ -1,0 +1,39 @@
+n8n.<domain>.<suffix> {
+    reverse_proxy n8n:5678 {
+      flush_interval -1
+    }
+}
+
+{
+  # Global options
+  # Optional: set an email for ACME registration/notifications
+  # Replace with your email or remove this line
+  email admin@example.com
+}
+
+# Wildcard certificate for your domain. Replace example.com with your domain
+# or generate this file from a template that injects your domain.
+# This example uses the Cloudflare DNS challenge. The Caddy container must
+# have the Cloudflare API token available as the environment variable
+# CLOUDFLARE_API_TOKEN. Do NOT commit that token to source control.
+
+# Example (replace example.com):
+*.example.com {
+  tls {
+    # Use the Cloudflare DNS provider and read the API token from env
+    # Caddy will perform the ACME DNS challenge to obtain a wildcard cert
+    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+  }
+
+  # Reverse proxy to the n8n service in docker-compose
+  reverse_proxy n8n:5678 {
+    flush_interval -1
+  }
+}
+
+# Notes:
+# - If you prefer another DNS provider, replace 'cloudflare' with the
+#   appropriate provider name and ensure the provider plugin is available
+#   in the Caddy image you run.
+# - Alternatively, you can create a templated Caddyfile that substitutes
+#   your domain from an environment variable before starting the container.
