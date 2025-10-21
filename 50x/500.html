@@ -1,103 +1,300 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>500 - Server Had a Bad Day</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        poppins: ['Poppins', 'sans-serif'],
-                    },
-                },
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ["Poppins", "sans-serif"],
             },
-        }
+          },
+        },
+      };
     </script>
     <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px) rotate(-5deg);  }
-            75% { transform: translateX(3px) rotate(5deg); }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
         }
-        .shake-animation {
-            animation: shake 1.8s infinite;
+        25% {
+          transform: translateX(-3px) rotate(-5deg);
         }
+        75% {
+          transform: translateX(3px) rotate(5deg);
+        }
+      }
+      .shake-animation {
+        animation: shake 1.8s infinite;
+      }
     </style>
     <script>
-        // Check system preference and localStorage on load
-        document.addEventListener('DOMContentLoaded', () => {
-            const html = document.documentElement;
-            const toggleBtn = document.getElementById('theme-toggle');
-            
-            // Check system preference
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const storedTheme = localStorage.getItem('theme');
-            
-            // Set initial theme
-            if (storedTheme) {
-                html.className = storedTheme;
-            } else {
-                html.className = systemPrefersDark ? 'dark' : 'light';
+      // Check system preference and localStorage on load
+      document.addEventListener("DOMContentLoaded", () => {
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById("theme-toggle");
+
+        // Check system preference
+        const systemPrefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        const storedTheme = localStorage.getItem("theme");
+
+        // Set initial theme
+        if (storedTheme) {
+          html.className = storedTheme;
+        } else {
+          html.className = systemPrefersDark ? "dark" : "light";
+        }
+
+        // Update button state
+        updateToggleButton();
+
+        // Listen for system preference changes
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", (e) => {
+            if (!localStorage.getItem("theme")) {
+              html.className = e.matches ? "dark" : "light";
+              updateToggleButton();
             }
-            
-            // Update button state
-            updateToggleButton();
-            
-            // Listen for system preference changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (!localStorage.getItem('theme')) {
-                    html.className = e.matches ? 'dark' : 'light';
-                    updateToggleButton();
-                }
-            });
-        });
-        
-        function toggleTheme() {
-            const html = document.documentElement;
-            const isDark = html.classList.contains('dark');
-            html.className = isDark ? 'light' : 'dark';
-            localStorage.setItem('theme', html.className);
-            updateToggleButton();
+          });
+      });
+
+      function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains("dark");
+        html.className = isDark ? "light" : "dark";
+        localStorage.setItem("theme", html.className);
+        updateToggleButton();
+      }
+
+      function updateToggleButton() {
+        const isDark = document.documentElement.classList.contains("dark");
+        const toggleBtn = document.getElementById("theme-toggle");
+        toggleBtn.innerHTML = isDark ? "☀️" : "🌙";
+      }
+
+      // This script will try to use the official Unsplash API when an access key
+      // is provided (via meta tag or URL param). Otherwise it falls back to the
+      // Unsplash Source endpoint which does not require a key.
+
+      function getAccessKey() {
+        // check meta tag
+        const meta = document.querySelector('meta[name="unsplash-access-key"]');
+        if (meta && meta.content) return meta.content.trim();
+
+        // check url param unsplash_access_key or access_key
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const key =
+            params.get("unsplash_access_key") || params.get("access_key");
+          if (key) return key.trim();
+        } catch (e) {
+          // ignore
         }
-        
-        function updateToggleButton() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const toggleBtn = document.getElementById('theme-toggle');
-            toggleBtn.innerHTML = isDark ? '☀️' : '🌙';
+        return null;
+      }
+
+      const FREE_SOURCES = [
+        {
+          name: "Picsum",
+          fetch: () => {
+            const seed = Math.floor(Math.random() * 1000);
+            return {
+              url: `https://picsum.photos/seed/${seed}/1920/1080`,
+              credit: "Lorem Picsum",
+            };
+          },
+        },
+        {
+          name: "PlaceIMG",
+          fetch: () => ({
+            url: "https://placeimg.com/1920/1080/nature",
+            credit: "PlaceIMG",
+          }),
+        },
+        {
+          name: "Unsplash Source",
+          fetch: (query) => {
+            const ts = Date.now();
+            return {
+              url: `https://source.unsplash.com/1920x1080/?${encodeURIComponent(
+                query
+              )}&${ts}`,
+              credit: "Unsplash",
+            };
+          },
+        },
+        {
+          name: "Pexels Static",
+          fetch: () => {
+            const images = [
+              {
+                url: "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg",
+                credit: "João Jesus",
+              },
+              {
+                url: "https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg",
+                credit: "Simon Berger",
+              },
+              {
+                url: "https://images.pexels.com/photos/1142941/pexels-photo-1142941.jpeg",
+                credit: "Jessica Lewis",
+              },
+              {
+                url: "https://images.pexels.com/photos/1770809/pexels-photo-1770809.jpeg",
+                credit: "Luis Dalvan",
+              },
+              {
+                url: "https://images.pexels.com/photos/1287075/pexels-photo-1287075.jpeg",
+                credit: "James Wheeler",
+              },
+            ];
+            const image = images[Math.floor(Math.random() * images.length)];
+            return { ...image, credit: `${image.credit} (via Pexels)` };
+          },
+        },
+      ];
+
+      async function getRandomBackground(prefersDark) {
+        // Try each source in order until one works
+        for (const source of FREE_SOURCES) {
+          try {
+            console.log(`Trying ${source.name}...`);
+            const result = source.fetch(
+              prefersDark ? "nature,night" : "nature"
+            );
+            if (result.url) {
+              // Test if image loads
+              await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = result.url;
+              });
+              console.log(`${source.name} succeeded`);
+              return { ...result, source: source.name };
+            }
+          } catch (err) {
+            console.warn(`${source.name} failed:`, err);
+            continue;
+          }
         }
+        // All sources failed, return null to trigger SVG fallback
+        return null;
+      }
+
+      async function applyBackground() {
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        const bg = document.getElementById("bg");
+        const overlay = document.getElementById("overlay");
+
+        const result = await getRandomBackground(prefersDark);
+
+        console.log("Background image result:", result);
+        if (!result || !result.url) {
+          const fallback =
+            "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221920%22 height=%221080%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23cfe8d6%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%23666%22%3EImage unavailable%3C/text%3E%3C/svg%3E";
+          bg.style.backgroundImage = `url('${fallback}')`;
+          overlay.className = prefersDark
+            ? "overlay-dark absolute inset-0"
+            : "overlay-light absolute inset-0";
+          document.getElementById("attribution").textContent =
+            "Image unavailable";
+          window._lastImage = fallback;
+          return;
+        }
+
+        bg.style.backgroundImage = `url('${result.url}')`;
+        overlay.className = prefersDark
+          ? "overlay-dark absolute inset-0"
+          : "overlay-light absolute inset-0";
+        document.getElementById("attribution").textContent =
+          result.credit || "";
+        window._lastImage = result.url;
+      }
+
+      async function init() {
+        await applyBackground();
+
+        document
+          .getElementById("refresh")
+          .addEventListener("click", async () => {
+            await applyBackground();
+          });
+
+
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", async () => {
+            await applyBackground();
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
     </script>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 font-poppins relative">
-    <button 
+  </head>
+  <body
+    class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 font-poppins relative"
+  >
+
+    <div id="bg" class="absolute inset-0 bg-cover-center">
+      <button
         id="theme-toggle"
         onclick="toggleTheme()"
         class="fixed top-4 right-4 bg-gray-200 dark:bg-gray-700 p-2 rounded-full text-2xl shadow-lg hover:scale-110 transition-transform"
-        aria-label="Toggle theme">
+        aria-label="Toggle theme"
+      >
         🌙
-    </button>
-
-    <!-- Esta linea daña el click sobre el boton <div class="overlay absolute inset-0"></div> -->
-    
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+      </button>
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center absolute inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto z-10"
+      >
         <div class="mb-6">
-            <span class="text-8xl font-bold text-red-500 dark:text-red-400 shake-animation inline-block">🤒</span>
+          <span
+            class="text-8xl font-bold text-red-500 dark:text-red-400 shake-animation inline-block"
+            >🤒</span
+          >
         </div>
-        <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">500</h1>
-        <h2 class="text-2xl text-gray-700 dark:text-gray-300 mb-6">Server is Feeling Under the Weather</h2>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">Our server called in sick today. We've given it some chicken soup and are waiting for it to feel better.</p>
+        <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+          500
+        </h1>
+        <h2 class="text-2xl text-gray-700 dark:text-gray-300 mb-6">
+          Server is Feeling Under the Weather
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+          Our server called in sick today. We've given it some chicken soup and
+          are waiting for it to feel better.
+        </p>
         <div class="space-y-4">
-            <div class="bg-red-100 dark:bg-red-900/50 p-4 rounded-lg">
-                <p class="text-red-700 dark:text-red-300 font-medium">Server's Temperature: 127.0.0.1°F</p>
-            </div>
-            <button onclick="window.location.reload()" class="bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200">
-                Check if Server Feels Better
-            </button>
+          <div class="bg-red-100 dark:bg-red-900/50 p-4 rounded-lg">
+            <p class="text-red-700 dark:text-red-300 font-medium">
+              Server's Temperature: 127.0.0.1°F
+            </p>
+          </div>
+          <button
+            onclick="window.location.reload()"
+            class="bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200"
+          >
+            Check if Server Feels Better
+          </button>
         </div>
+      </div>
     </div>
-</body>
+    <div id="overlay" class="absolute inset-0"></div>
+    <!-- Esta linea daña el click sobre el boton <div class="overlay absolute inset-0"></div> -->
+  </body>
 </html>
