@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Had a Bad Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px) rotate(-5deg);  }
+            75% { transform: translateX(3px) rotate(5deg); }
+        }
+        .shake-animation {
+            animation: shake 1.8s infinite;
+        }
+    </style>
+    <script>
+        // Check system preference and localStorage on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('theme-toggle');
+            
+            // Check system preference
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const storedTheme = localStorage.getItem('theme');
+            
+            // Set initial theme
+            if (storedTheme) {
+                html.className = storedTheme;
+            } else {
+                html.className = systemPrefersDark ? 'dark' : 'light';
+            }
+            
+            // Update button state
+            updateToggleButton();
+            
+            // Listen for system preference changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) {
+                    html.className = e.matches ? 'dark' : 'light';
+                    updateToggleButton();
+                }
+            });
+        });
+        
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            html.className = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', html.className);
+            updateToggleButton();
+        }
+        
+        function updateToggleButton() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const toggleBtn = document.getElementById('theme-toggle');
+            toggleBtn.innerHTML = isDark ? '☀️' : '🌙';
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 font-poppins relative">
+    <button 
+        id="theme-toggle"
+        onclick="toggleTheme()"
+        class="fixed top-4 right-4 bg-gray-200 dark:bg-gray-700 p-2 rounded-full text-2xl shadow-lg hover:scale-110 transition-transform"
+        aria-label="Toggle theme">
+        🌙
+    </button>
+
+    <!-- Esta linea daña el click sobre el boton <div class="overlay absolute inset-0"></div> -->
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full text-center">
+        <div class="mb-6">
+            <span class="text-8xl font-bold text-red-500 dark:text-red-400 shake-animation inline-block">🤒</span>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">500</h1>
+        <h2 class="text-2xl text-gray-700 dark:text-gray-300 mb-6">Server is Feeling Under the Weather</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Our server called in sick today. We've given it some chicken soup and are waiting for it to feel better.</p>
+        <div class="space-y-4">
+            <div class="bg-red-100 dark:bg-red-900/50 p-4 rounded-lg">
+                <p class="text-red-700 dark:text-red-300 font-medium">Server's Temperature: 127.0.0.1°F</p>
+            </div>
+            <button onclick="window.location.reload()" class="bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200">
+                Check if Server Feels Better
+            </button>
+        </div>
+    </div>
+</body>
+</html>
