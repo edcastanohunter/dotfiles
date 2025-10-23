@@ -1,4 +1,8 @@
-version: "3.7"
+version: "3.8"
+
+networks:
+  appnet:
+    driver: bridge
 
 services:
   # caddy:
@@ -16,9 +20,22 @@ services:
   #     # Store this token securely (do not commit to git). You can set it in
   #     # your environment or a docker secret and inject it here.
   #     - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+  website:
+    image: nginx:latest
+    container_name: website
+    ports:
+      - "8090:80"
+    volumes:
+      - ./website/index.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      - appnet
+    restart: unless-stopped
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    build:
+      context: .
+      dockerfile: ./docker_images/n8n.dockerfile
+    container_name: n8n
     restart: always
     ports:
       # Do not publish n8n's port to the host. Caddy (in the same Docker
@@ -28,9 +45,13 @@ services:
       # the bind-to-localhost syntax (Docker Engine v20.10+):
       - "127.0.0.1:5678:5678"
     environment:
+      - N8N_EDITOR_BASE_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
+      # Trust proxy ranges (Express syntax: comma-separated, supports CIDR and keywords)
+      - N8N_EXPRESS_TRUST_PROXY=loopback,uniquelocal,172.17.0.0/16
       - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
+      - N8N_SECURE_COOKIE=true
       - NODE_ENV=production
       - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
@@ -43,7 +64,10 @@ services:
           memory: 2G
         reservations:
           memory: 1G
-      
+    networks:
+      - appnet
+
+
 volumes:
   # caddy_data:
   #   external: true

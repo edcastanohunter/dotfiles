@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Beauty of Nature</title>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Raleway", sans-serif;
+        color: #fff;
+      }
+
+      .hero-section {
+        background: url("https://images.unsplash.com/photo-1499533324546-b3e10c79ab92?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTIzMzB8MHwxfHNlYXJjaHw5fHxuYXR1cmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzEyMDcyNTE1fDA&ixlib=rb-4.0.3&q=80&w=1080")
+          no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .hero-content {
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.4
+        ); /* Dark overlay for better text readability */
+        padding: 2rem 3rem;
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+      }
+
+      h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 3.5rem;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+
+      p {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        max-width: 600px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .cta-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 10px 25px;
+        background-color: #556b2f; /* A green color for nature theme */
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .cta-button:hover {
+        background-color: #6b8e23;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>Discover the Tranquility</h1>
+        <p>Experience the serene and untouched beauty of the natural world.</p>
+        <a href="#" class="cta-button">Explore Now</a>
+      </div>
+    </div>
+  </body>
+</html>
